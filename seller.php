@@ -19,7 +19,7 @@
                 $con=mysqli_connect('localhost','root','') or die(mysqli_error());  
                 mysqli_select_db($con,'book_store') or die("cannot select DB");  
 
-                $query1="SELECT * FROM register WHERE `email`='$user' OR `mobile`='$user' AND `pass`='$pass'";
+                $query1="SELECT * FROM seller WHERE `email`='$user' OR `mobile`='$user' AND `pass`='$pass'";
                 $query=mysqli_query($con,$query1);# or die(mysqli_error());  
                 $numrows=mysqli_num_rows($query);
                 $dbusername;
@@ -29,9 +29,9 @@
                     while($row=mysqli_fetch_array($query)){  
                         $dbusername=$row['email'];  
                         $dbpassword=$row['pass'];
-                        $first=$row['first_n']; 
-                        $middle=$row['middle_n']; 
-                        $last=$row['last_n']; 
+                        $first=$row['first']; 
+                        $middle=$row['middle']; 
+                        $last=$row['last']; 
                         $mobile=$row['mobile'];
                         
                     }  
@@ -43,7 +43,8 @@
                         $_SESSION['last']=$last;
                         $_SESSION['email']=$dbusername;
                         $_SESSION['mobile']=$mobile;
-                        // $userdata=array("email"=>"$dbusername");
+                        $_SESSION['seller']='seller';
+                       
                         header("Location: Index_logged.php");  
                     }  
                     else {
@@ -172,7 +173,7 @@
             <h3 class="animated zoomIn" data-wow-delay=".2s" >Register</h3>
           	<p class="est animated zoomIn" data-wow-delay=".2s">Please fill up the form</p>
 			<div class="login-form-grids animated slideInUp" data-wow-delay=".1s">
-                <form action="welcome.php" enctype="multipart/form-data" method="POST">
+                <form action="welcomeseller.php" enctype="multipart/form-data" method="POST">
                     
                     <input type="text" placeholder="First Name" required name="first_n" >
                     <input type="text" placeholder="Last Name" required name="last_n" >
@@ -185,7 +186,7 @@
                     pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" title="Password must contain at least one uppercase ,lowercase letter,one number, and at least 6 or more characters" >
 					
 					<button  type="submit" value="register" align="middle" name="action">Register</button>
-                    <h2><a href="seller.php?value=register">Register as a seller</a></h2>
+                    <button><a href="login.php?value=login">&nbsp;Register as a User</a></button>
                 </form>
                 <h4 class="animated slideInUp" data-wow-delay=".2s" align="middle">If already registered</h4>
 			<p class="animated slideInUp" data-wow-delay=".2s" align="middle"><a href="login.php">Login Here</a> (Or) go back to <a href="index_logged.php">Home<span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span></a></p>
@@ -209,8 +210,8 @@
                                         <div class="forgot">
                                             <a href="forgotpass.php">Forgot Password?</a>
                                         </div>
-                                        <button type="submit"  name="submit">Login</button><br><br>
-                                        <button><a href="seller.php?value=login">&nbsp;Login as a seller to add books</a></button>
+                                        <button type="submit"  name="submit">Login</button>
+                                        <button><a href="login.php?value=login">&nbsp;Login as a User</a></button>
                                     </form>
                                 </div>
                         <h4 class="animated slideInUp" data-wow-delay=".2s" align="middle">If not registered</h4>

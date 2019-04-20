@@ -18,3 +18,17 @@
         #author h3{color:rgb(228, 55, 25);}
         footer {background:#101010!important;margin-top: 20px;border:1px solid #DEEAEE;border-radius:5px;color:#D67B22!important;}
         footer .row {padding:10px;}
+        div.sticky {
+                position: -webkit-sticky;
+                position: sticky;
+                top: 0;
+                background-color: yellow;
+                padding: 50px;
+                font-size: 20px;
+            }
+      
+
+           
+
+
+

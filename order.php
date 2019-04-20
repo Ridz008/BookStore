@@ -1,31 +1,38 @@
 <?php
-session_start();
+	session_start();
+  if(!isset($_SESSION['user'])){
+       header("location: index_logged.php?value=login?Message=Login To Continue");
+    echo '<script type="text/javascript">
+        alert("Please Login view your cart!")
+    </script>';
+    }
+    if(isset($_SESSION['seller'])){
+      echo '<script>alert("Please login as a User to buy books");
+            window.location.href="login.php?value=login";</script>';
+    }
+    
+	include "dbconnect.php";
+         $customer=$_SESSION['email'];
 ?>
-
+                    
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Books">
-    
-    <title> Online Bookstore</title>
+    <meta name="description" content="Cart">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title>order</title>
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/my.css" rel="stylesheet">
-
-    <style>  
-        @media only screen and (width: 768px) { body{margin-top:150px;}}
-        @media only screen and (max-width: 760px) { #books .row{margin-top:10px;}}
-        .tag {display:inline;float:left;padding:2px 5px;width:auto;background:#F5A623;color:#fff;height:23px;}
-        .tag-side{display:inline;float:left;}
-        #books {border:1px solid #DEEAEE; margin-bottom:20px;padding-top:30px;padding-bottom:20px;background:#fff; margin-left:10%;margin-right:10%;}
-        #description {border:1px solid #DEEAEE; margin-bottom:20px;padding:20px 50px;background:#fff;margin-left:10%;margin-right:10%;}
-        #description hr{margin:auto;}
-        #service{background:#fff;padding:20px 10px;width:112%;margin-left:-6%;margin-right:-6%;}
-        .glyphicon {color:#D67B22;}
+    <style>
+        #cart {margin-top:30px;margin-bottom:30px;}
+        .panel {border:1px solid rgb(15, 11, 6);padding-left:0px;padding-right:0px;}
+        .panel-heading {background:rgb(7, 6, 5) !important;color:white !important;}        
+        @media only screen and (width: 767px) { body{margin-top:150px;}}
     </style>
  <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />   
@@ -48,8 +55,7 @@ session_start();
  new WOW().init();
 </script>
 </head>
-<body>
-<div style="background-color:#2E2E2E ;margin-top:0px;margin-right:0px;padding:10px;">
+<body>  <div style="background-color:#2E2E2E ;margin-top:0px;margin-right:0px;padding:10px;">
             <div   style="margin-left:7%;margin-right:9%;margin-top:0px;margin-right:9%;padding-top:0px;">
                     <div class="header-grid" style="padding-top:4px;"  >
                                     <div class="header-grid-left animated slideInLeft;z-index:2"; data-wow-delay=".2s" >
@@ -58,14 +64,13 @@ session_start();
                                                 <li><i class="glyphicon glyphicon-earphone" style="color:white"   aria-hidden="true"></i><a style="color:white">+91 <span>7990</span> 662<span> 972</span></a></li>
                                                
                                                 <?php
-                                                  if(isset($_SESSION['user'])){
+                                              if(isset($_SESSION['user'])){
                                               
                                                echo  ' <li class="dropdown"><i class="glyphicon  glyphicon-log-in" style="color:white" aria-hidden="true"></i>
                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Welcome '.$_SESSION['user'].' <b class="caret"></b></a>';
                                                echo '<ul class="dropdown-menu columns" style="">
                                                <li style=""><a href="current.php?value=change">Your Account</a></li>
-                                               <li style=""><a href="current.php?value=changepass">Change Password</a></li>
-                                               <li style=""><a href="order.php">Your Orders</a></li>';
+                                               <li style=""><a href="current.php?value=changepass">Change Password</a></li>';
                                                if(!isset($_SESSION['seller'])){
                                                 echo '<li style=""><a href="cart.php">Your Cart</a></li>'; 
                                                }
@@ -126,115 +131,99 @@ session_start();
                 
             </div>
 </div>
-<!-- banner -->
-<!--Header over-->
 
-    <?php
-    include "dbconnect.php";
-    $PID=$_GET['ID'];
-    $query44="SELECT * from popular where pid='$PID' ";
-    $que=mysqli_query($con,$query44);
-    $numrows=mysqli_num_rows($que);
-    if($numrows>0){
-        
-        while($row=mysqli_fetch_array($que)){ 
-        $visit=$row['visit'];
-        $visit=$visit+1;
-        $query44="UPDATE popular set visit=$visit where pid='$PID'";
-        mysqli_query($con,$query44);
-        } 
+<!--Header over---------------------------------------------------------------------------->
+	<?php
 
-    }   
-
-    $query = "SELECT * FROM products WHERE PID='$PID'";
-    $result = mysqli_query ($con,$query)or die(mysql_error());
-
-        if(mysqli_num_rows($result) > 0) 
-        {   
-            while($row = mysqli_fetch_assoc($result)) 
-            {
-            $path="img/books/".$row['PID'].".jpg";
-            $target="cart.php?ID=".$PID."&";
-echo '
-  <div class="container-fluid" id="books">
-    <div class="row">
-      <div class="col-sm-10 col-md-6">
-                          <div class="tag">'.$row["Discount"].'%OFF</div>
-                              <div class="tag-side"><img src="img/orange-flag.png">
-                          </div>
-                         <img class="center-block img-responsive" src="'.$path.'" height="550px" style="padding:20px;">
-      </div>
-      <div class="col-sm-10 col-md-4 col-md-offset-1">
-        <h2> '. $row["Title"] . '</h2>
-                                <span style="color:#00B9F5;">
-                                 #'.$row["Author"].'&nbsp &nbsp #'.$row["Publisher"].'
-                                </span>
-        <hr>            
-                                <span style="font-weight:bold;"> Quantity : </span>';
-                                echo'<select id="quantity">';
-                                   for($i=1;$i<=$row['Available'];$i++)
-                                       echo '<option value="'.$i.'">'.$i.'</option>';
-                               echo ' </select>';
-
-
-                               echo'                           <br><br><br>';
-                             
-                             
-                               if(isset($_SESSION['seller'])){
-                                    echo'   <a  href="" class="btn btn-lg btn-danger" style="padding:15px;color:white;text-decoration:none;"> 
-                                  ADD TO CART for Rs '.$row["Price"] .' <br>
-                                  <span style="text-decoration:line-through;"> RS'.$row["MRP"].'</span> 
-                                  | '.$row["Discount"].'% discount
-                                  </a> <br><h4>You need to be logged in as a user <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to add books to cart</h4>';
-                                   }
-                              else if(isset($_SESSION['user'])){
-                                echo'   <a id="buyLink" href="'.$target.'" class="btn btn-lg btn-danger" style="padding:15px;color:white;text-decoration:none;"> 
-                                ADD TO CART for Rs '.$row["Price"] .' <br>
-                                <span style="text-decoration:line-through;"> RS'.$row["MRP"].'</span> 
-                                | '.$row["Discount"].'% discount
-                                </a> ';
-                                   }
-                               else{
-                                echo'   <a  href="login.php?value=login" class="btn btn-lg btn-danger" style="padding:15px;color:white;text-decoration:none;"> 
-                                ADD TO CART for Rs '.$row["Price"] .' <br>
-                                <span style="text-decoration:line-through;"> RS'.$row["MRP"].'</span> 
-                                | '.$row["Discount"].'% discount
-                             </a> ';
-                                   }
-                             
-
-  echo'    </div>
-    </div>
-          </div>
-     ';
-echo '
-          <div class="container-fluid" id="description">
-    <div class="row">
-      <h2> Description </h2> <br>
-                        <p>'.$row['Description'] .'</p><br>
-                        <pre style="background:inherit;border:none;">
-   PRODUCT CODE  '.$row["PID"].'   <hr> 
-   TITLE         '.$row["Title"].' <hr> 
-   AUTHOR        '.$row["Author"].' <hr>
-   AVAILABLE     '.$row["Available"].' <hr> 
-   PUBLISHER     '.$row["Publisher"].' <hr> 
-   EDITION       '.$row["Edition"].' <hr>
-   LANGUAGE      '.$row["Language"].' <hr>
-   PAGES         '.$row["page"].' <hr>
-   WEIGHT        '.$row["weight"].' <hr>
-                        </pre>
-    </div>
-  </div>
-';
-
+echo '<div class="container-fluid" id="cart">
+      <div class="row">
+          <div class="col-xs-12 text-center" id="heading">
+                 <h2 style="color:white;text-transform:uppercase;background-color:black;margin-left:41%;
+                 margin-right:40%;padding:20px;border-radius:40%">  YOUR ORDERS </h2><hr><br><br>
+           </div>
+        </div>';
+	if(isset($_SESSION['user']))
+	    {   
+              	if(isset($_GET['ID']))
+	            {   
+                        $product=$_GET['ID'];
+                        $quantity=$_GET['quantity'];
+                        $query="SELECT * from custorder where customer='$customer' AND product='$product'";
+                        $result=mysqli_query($con,$query);
+                        $row = mysqli_fetch_assoc($result);
+                        if(mysqli_num_rows($result)==0)
+	                         { $query="INSERT INTO cart values('$customer','$product','$quantity')"; 
+                              $result=mysqli_query($con,$query);
+                            }
+                        else
+                           { $new=$_GET['quantity'];
+                             $query="UPDATE `cart` SET Quantity=$new WHERE Customer='$customer' AND Product='$product'";
+	                           $result=mysqli_query($con,$query);
+                            }
+                    }
+              	$query="SELECT PID,Title,Author,Edition,Quantity,Price FROM custorder INNER JOIN products ON custorder.product=products.PID 
+                          WHERE customer='$customer'";
+                          
             
-            }
-        }
-    echo '</div>';
-    ?>
-
-
-
+	        $result=mysqli_query($con,$query); 
+                $total=0;
+                if(mysqli_num_rows($result)>0)
+                {    $i=1;
+                     $j=0;
+                     while($row = mysqli_fetch_assoc($result))
+                     {       $path = "img/books/".$row['PID'].".jpg";
+                             $Stotal = $row['Quantity'] * $row['Price'];
+                             if($i % 2 == 1)  $offset= 1;
+                             if($i % 2 == 0)  $offset= 2;                                                
+                             if($j%2==0)
+                                 echo '<div class="row">'; 
+                                 echo '                
+                                      <div class="panel col-xs-12 col-sm-4 col-sm-offset-'.$offset.' col-md-4 col-md-offset-'.$offset.' col-lg-4 col-lg-offset-'.$offset.' text-center" style="color:black;font-weight:800;">
+                                          <div class="panel-heading">Order '. $i .'
+                                          </div>
+                                          <div class="panel-body">
+			                                                <img class="image-responsive block-center" src="'.$path.'" style="height :100px;"> <br>
+           							                                                    Title : '.$row['Title'].'  <br>        	 
+                                                      									Author : '.$row['Author'].' <br>                            	      
+                                                      									Edition : '.$row['Edition'].' <br>
+                                                      									Quantity : '.$row['Quantity'].' <br>
+                                                      									Price : '.$row['Price'].' <br>
+                                                      									
+                                                                       
+                                        </div>
+                                    </div>';
+                               if($j % 2==1)
+                                   echo '</div>';                                 
+                               $total=$total + $Stotal; 
+                               $i++;
+                               $j++;                                                 
+                     } 
+                    
+                   
+                } 
+               else
+                     {  
+                        echo ' 
+                         <div class="row">
+                            <div class="col-xs-9 col-xs-offset-3 col-sm-4 col-sm-offset-5 col-md-4 col-md-offset-5">
+                                 <h3><span class="text-center" style="color:black;font-weight:bold;margin-left:-100px">Looks Like You haven\'t Ordered anything</span></h3><br>
+                             </div>
+                         </div>
+                         <div class="row">
+                             <div class="col-xs-9 col-xs-offset-3 col-sm-2 col-sm-offset-5 col-md-2 col-md-offset-5">
+                                  <a href="index_logged.php" class="btn btn-lg" style="background:black;color:white;font-weight:800;">&nbspReturn to Bookstore</a>
+                                  
+                             </div>
+                          </div>';
+                     }               
+	    }
+	else
+	    { 
+	          echo "login to continue";
+	    }
+        echo '</div>';
+	?>
+</div>
 <!-- Footer-->
 <div class="footer">
     <div class="container">
@@ -247,7 +236,7 @@ echo '
           <h3>Contact Info</h3>
           <ul>
             <li><i class="glyphicon glyphicon-map-marker" aria-hidden="true"></i>N Block, Nirma University <span>Ahmedabad.</span></li>
-            <li><i class="glyphicon glyphicon-envelope" aria-hidden="true"></i><a href="mailto:cayden53@gmail.com">cayden53@gmail.com</a></li>
+            <li><i class="glyphicon glyphicon-envelope" aria-hidden="true"></i><a href="mailto:csreddawn@gmail.com">csreddawn@gmail.com</a></li>
             <li><i class="glyphicon glyphicon-earphone" aria-hidden="true"></i>+7990 662 972</li>
           </ul>
         </div>
@@ -263,7 +252,7 @@ echo '
           <h3>Subscription to our NewsLetter</h3>
           <ul>
                         <li><i class="glyphicon glyphicon-envelope" aria-hidden="true"></i>
-                        <input type="text" name="email" ><a href="mailto:cayden53@gmail.com"></a></li>
+                        <input type="text" name="email" ><a href="mailto:csreddawn@gmail.com"></a></li>
             
           </ul>
         </div>
@@ -274,21 +263,10 @@ echo '
       </div>
     
     </div>
-  </div>
 <!-- //footer -->
-
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
-<script>
-            $(function () {
-                var link = $('#buyLink').attr('href');
-                $('#buyLink').attr('href', link + 'quantity=' + $('#quantity option:selected').val());
-                $('#quantity').on('change', function () {
-                $('#buyLink').attr('href', link + 'quantity=' + $('#quantity option:selected').val());
-                });
-            });
-    </script>
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="js/bootstrap.min.js"></script>
 </body>
-</html>       
+</html>
